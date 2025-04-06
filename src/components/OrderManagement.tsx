@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Export, Printer, Calendar } from 'lucide-react';
+import { FileUp, Printer, Calendar } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { 
   Select, 
@@ -33,7 +33,7 @@ export const OrderManagement = () => {
         </div>
         <div className="flex gap-3">
           <Button variant="outline" className="flex items-center gap-2">
-            <Export size={18} />
+            <FileUp size={18} />
             Export
           </Button>
           <Button variant="outline" className="flex items-center gap-2">
