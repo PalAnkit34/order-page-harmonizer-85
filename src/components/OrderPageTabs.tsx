@@ -11,11 +11,11 @@ export const OrderPageTabs = () => {
   return (
     <div className="space-y-8">
       <OrderManagement />
-      <BasicSpecifications />
       <PipingSpecifications />
       <AdditionalFeatures />
       <AccessorySelection />
       <OrderSpecifications />
+      <BasicSpecifications />
     </div>
   );
 };
