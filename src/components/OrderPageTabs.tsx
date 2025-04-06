@@ -1,21 +1,21 @@
 
 import React from 'react';
-import { AccessorySelection } from './AccessorySelection';
+import { OrderManagement } from './OrderManagement';
 import { BasicSpecifications } from './BasicSpecifications';
 import { PipingSpecifications } from './PipingSpecifications';
 import { AdditionalFeatures } from './AdditionalFeatures';
 import { OrderSpecifications } from './OrderSpecifications';
-import { OrderManagement } from './OrderManagement';
+import { AccessorySelection } from './AccessorySelection';
 
 export const OrderPageTabs = () => {
   return (
     <div className="space-y-8">
-      <AccessorySelection />
+      <OrderManagement />
       <BasicSpecifications />
       <PipingSpecifications />
       <AdditionalFeatures />
       <OrderSpecifications />
-      <OrderManagement />
+      <AccessorySelection />
     </div>
   );
 };
