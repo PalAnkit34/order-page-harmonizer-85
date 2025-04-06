@@ -14,8 +14,8 @@ export const OrderPageTabs = () => {
       <BasicSpecifications />
       <PipingSpecifications />
       <AdditionalFeatures />
-      <OrderSpecifications />
       <AccessorySelection />
+      <OrderSpecifications />
     </div>
   );
 };
