@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Armchair, Waves, Chain } from 'lucide-react';
+import { Armchair, Waves, Link } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type AccessoryProps = {
@@ -39,7 +39,7 @@ export const AccessorySelection = () => {
   const [selectedAccessory, setSelectedAccessory] = React.useState<string | null>("Chain");
 
   const accessories = [
-    { name: "Chain", icon: <Chain size={20} /> },
+    { name: "Chain", icon: <Link size={20} /> },
     { name: "Runn", icon: <RunnIcon /> },
     { name: "Elastic", icon: <Waves size={20} /> },
   ];
