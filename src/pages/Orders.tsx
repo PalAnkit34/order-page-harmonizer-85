@@ -2,14 +2,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
-import { 
   Card, 
   CardContent, 
   CardHeader, 
@@ -27,17 +19,13 @@ import {
   FileText, 
   Check, 
   Clock, 
-  RotateCcw 
+  RotateCcw,
+  User,
+  Calendar,
+  Package
 } from 'lucide-react';
 import { OrderDetails } from '@/components/OrderDetails';
-import { 
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // Mock data for demonstration purposes
 const MOCK_ORDERS = [
@@ -132,6 +120,7 @@ const Orders = () => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const filteredOrders = activeFilter === 'all' 
     ? MOCK_ORDERS 
@@ -171,38 +160,42 @@ const Orders = () => {
   return (
     <div className="min-h-screen bg-neutral-50">
       <div className="container max-w-7xl mx-auto py-8 px-4">
-        <div className="mb-6 flex justify-between items-center">
-          <Button variant="outline" asChild>
-            <Link to="/dashboard" className="flex items-center gap-2">
-              <ArrowLeft size={18} />
-              Back to Dashboard
-            </Link>
-          </Button>
-          <div>
-            <Button asChild variant="default">
+        {!isMobile && (
+          <div className="mb-6 flex justify-between items-center">
+            <Button variant="outline" asChild>
               <Link to="/" className="flex items-center gap-2">
-                Create New Order
+                <ArrowLeft size={18} />
+                Back to Dashboard
               </Link>
             </Button>
+            <div>
+              <Button asChild variant="default">
+                <Link to="/create-order" className="flex items-center gap-2">
+                  Create New Order
+                </Link>
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
 
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl font-bold">Orders</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-2 mb-6">
+            <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
               <Button 
                 variant={activeFilter === 'all' ? 'default' : 'outline'} 
                 onClick={() => setActiveFilter('all')}
+                size="sm"
               >
-                All Orders
+                All
               </Button>
               <Button 
                 variant={activeFilter === 'pending' ? 'default' : 'outline'} 
                 onClick={() => setActiveFilter('pending')}
                 className="flex items-center gap-1"
+                size="sm"
               >
                 <Clock className="h-4 w-4" />
                 Pending
@@ -211,6 +204,7 @@ const Orders = () => {
                 variant={activeFilter === 'in-progress' ? 'default' : 'outline'} 
                 onClick={() => setActiveFilter('in-progress')}
                 className="flex items-center gap-1"
+                size="sm"
               >
                 <RotateCcw className="h-4 w-4" />
                 In Progress
@@ -219,80 +213,61 @@ const Orders = () => {
                 variant={activeFilter === 'completed' ? 'default' : 'outline'} 
                 onClick={() => setActiveFilter('completed')}
                 className="flex items-center gap-1"
+                size="sm"
               >
                 <Check className="h-4 w-4" />
                 Completed
               </Button>
             </div>
 
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Order ID</TableHead>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Product</TableHead>
-                    <TableHead>Quantity</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Total</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredOrders.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell className="font-medium">#{order.id}</TableCell>
-                      <TableCell>{order.customerName}</TableCell>
-                      <TableCell>{order.productType}</TableCell>
-                      <TableCell>{order.quantity}</TableCell>
-                      <TableCell>{order.date}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredOrders.map((order) => (
+                <Card key={order.id} className="overflow-hidden">
+                  <CardContent className="p-0">
+                    <div className={`h-2 w-full ${
+                      order.status === 'completed' ? 'bg-green-500' : 
+                      order.status === 'pending' ? 'bg-amber-500' : 'bg-blue-500'
+                    }`} />
+                    <div className="p-4">
+                      <div className="flex justify-between items-start mb-4">
+                        <h3 className="font-bold">#{order.id}</h3>
+                        <div className="flex items-center gap-1 text-sm">
                           {getStatusIcon(order.status)}
                           <span>{getStatusText(order.status)}</span>
                         </div>
-                      </TableCell>
-                      <TableCell>${order.total.toLocaleString()}</TableCell>
-                      <TableCell>
+                      </div>
+                      
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center gap-2">
+                          <User className="h-4 w-4 text-gray-500" />
+                          <span className="text-sm">{order.customerName}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Package className="h-4 w-4 text-gray-500" />
+                          <span className="text-sm">{order.productType} × {order.quantity}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-gray-500" />
+                          <span className="text-sm">{order.date}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <div className="font-medium">${order.total.toLocaleString()}</div>
                         <Button 
                           variant="outline" 
-                          size="sm" 
+                          size="sm"
                           onClick={() => handleViewDetails(order)}
                           className="flex items-center gap-1"
                         >
                           <FileText className="h-4 w-4" />
                           Details
                         </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-
-            <div className="mt-4">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious href="#" />
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink href="#" isActive>
-                      1
-                    </PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink href="#">2</PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink href="#">3</PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationNext href="#" />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </CardContent>
         </Card>
