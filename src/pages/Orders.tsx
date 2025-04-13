@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -22,9 +21,12 @@ import {
   RotateCcw,
   User,
   Calendar,
-  Package
+  Package,
+  Printer,
+  Plus
 } from 'lucide-react';
 import { OrderDetails } from '@/components/OrderDetails';
+import { PrintingForm } from '@/components/PrintingForm';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 // Mock data for demonstration purposes
@@ -120,6 +122,7 @@ const Orders = () => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isPrintingFormOpen, setIsPrintingFormOpen] = useState(false);
   const isMobile = useIsMobile();
 
   const filteredOrders = activeFilter === 'all' 
@@ -129,6 +132,12 @@ const Orders = () => {
   const handleViewDetails = (order: any) => {
     setSelectedOrder(order);
     setIsDialogOpen(true);
+  };
+
+  const handleAddPrintingDetails = () => {
+    if (selectedOrder) {
+      setIsPrintingFormOpen(true);
+    }
   };
 
   const getStatusIcon = (status: string) => {
@@ -275,11 +284,30 @@ const Orders = () => {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="max-w-4xl">
             <DialogHeader>
-              <DialogTitle>Order #{selectedOrder?.id} Details</DialogTitle>
+              <DialogTitle className="flex justify-between items-center">
+                <span>Order #{selectedOrder?.id} Details</span>
+                <Button 
+                  onClick={handleAddPrintingDetails}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <Printer size={16} />
+                  <Plus size={16} />
+                  Add Printing Details
+                </Button>
+              </DialogTitle>
             </DialogHeader>
             {selectedOrder && <OrderDetails order={selectedOrder} />}
           </DialogContent>
         </Dialog>
+
+        {selectedOrder && (
+          <PrintingForm 
+            open={isPrintingFormOpen} 
+            onOpenChange={setIsPrintingFormOpen}
+            orderId={selectedOrder.id}
+          />
+        )}
       </div>
     </div>
   );

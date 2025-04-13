@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Orders from "./pages/Orders";
+import PrintingDashboard from "./pages/PrintingDashboard";
 import NotFound from "./pages/NotFound";
 import BottomNavigation from "./components/BottomNavigation";
 import { useIsMobile } from "./hooks/use-mobile";
@@ -27,6 +28,7 @@ const App = () => {
               <Route path="/" element={<Dashboard />} />
               <Route path="/create-order" element={<Index />} />
               <Route path="/orders" element={<Orders />} />
+              <Route path="/printing" element={<PrintingDashboard />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
