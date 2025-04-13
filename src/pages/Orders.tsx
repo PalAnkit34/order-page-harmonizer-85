@@ -17,7 +17,6 @@ const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isPrintingFormOpen, setIsPrintingFormOpen] = useState(false);
-  const [isNewOrderPrinting, setIsNewOrderPrinting] = useState(false);
   const isMobile = useIsMobile();
 
   const filteredOrders = activeFilter === 'all' 
@@ -32,22 +31,13 @@ const Orders = () => {
   const handleAddPrintingDetails = () => {
     if (selectedOrder) {
       setIsPrintingFormOpen(true);
-      setIsNewOrderPrinting(false);
     }
-  };
-
-  const handleAddNewPrintingDetails = () => {
-    setSelectedOrder(null);
-    setIsPrintingFormOpen(true);
-    setIsNewOrderPrinting(true);
   };
 
   return (
     <div className="min-h-screen bg-neutral-50">
       <div className="container max-w-7xl mx-auto py-8 px-4">
-        {!isMobile && (
-          <OrdersHeader onAddPrintingDetails={handleAddNewPrintingDetails} />
-        )}
+        {!isMobile && <OrdersHeader />}
 
         <Card>
           <CardHeader>
@@ -79,22 +69,12 @@ const Orders = () => {
           </DialogContent>
         </Dialog>
 
-        <PrintingForm 
-          open={isPrintingFormOpen} 
-          onOpenChange={setIsPrintingFormOpen}
-          orderId={isNewOrderPrinting ? undefined : selectedOrder?.id}
-        />
-
-        {isMobile && (
-          <div className="fixed bottom-20 right-4 z-10">
-            <Button 
-              onClick={handleAddNewPrintingDetails}
-              size="icon"
-              className="rounded-full h-14 w-14 shadow-lg"
-            >
-              <Plus size={24} />
-            </Button>
-          </div>
+        {selectedOrder && (
+          <PrintingForm 
+            open={isPrintingFormOpen} 
+            onOpenChange={setIsPrintingFormOpen}
+            orderId={selectedOrder.id}
+          />
         )}
       </div>
     </div>
