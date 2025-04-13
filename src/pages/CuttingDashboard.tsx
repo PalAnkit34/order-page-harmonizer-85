@@ -13,35 +13,35 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { PrintingTasks } from '@/components/PrintingTasks';
-import { PrintingForm } from '@/components/PrintingForm';
+import { CuttingTasks } from '@/components/CuttingTasks';
+import { CuttingForm } from '@/components/CuttingForm';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-const PrintingDashboard = () => {
+const CuttingDashboard = () => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [date, setDate] = useState<Date | undefined>(undefined);
   const isMobile = useIsMobile();
-  const [isPrintingFormOpen, setIsPrintingFormOpen] = useState(false);
+  const [isCuttingFormOpen, setIsCuttingFormOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string | undefined>(undefined);
 
-  // Listen for the custom event to open the printing form
+  // Listen for the custom event to open the cutting form
   useEffect(() => {
-    const handleOpenPrintingForm = (event: CustomEvent) => {
+    const handleOpenCuttingForm = (event: CustomEvent) => {
       const { orderId } = event.detail;
       setSelectedOrderId(orderId);
-      setIsPrintingFormOpen(true);
+      setIsCuttingFormOpen(true);
     };
 
-    window.addEventListener('openPrintingForm', handleOpenPrintingForm as EventListener);
+    window.addEventListener('openCuttingForm', handleOpenCuttingForm as EventListener);
     
     return () => {
-      window.removeEventListener('openPrintingForm', handleOpenPrintingForm as EventListener);
+      window.removeEventListener('openCuttingForm', handleOpenCuttingForm as EventListener);
     };
   }, []);
 
-  const handleAddNewPrinting = () => {
+  const handleAddNewCutting = () => {
     setSelectedOrderId(undefined);
-    setIsPrintingFormOpen(true);
+    setIsCuttingFormOpen(true);
   };
 
   return (
@@ -50,40 +50,34 @@ const PrintingDashboard = () => {
         {!isMobile && (
           <div className="mb-6 flex justify-between items-center">
             <Button variant="outline" asChild>
-              <Link to="/" className="flex items-center gap-2">
+              <Link to="/printing" className="flex items-center gap-2">
                 <ArrowLeft size={18} />
-                Back to Dashboard
-              </Link>
-            </Button>
-            <Button variant="outline" asChild className="flex items-center gap-2 text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300">
-              <Link to="/cutting">
-                <Scissors size={18} className="mr-1" />
-                Cutting Dashboard
+                Back to Printing
               </Link>
             </Button>
           </div>
         )}
 
-        <h1 className="text-3xl font-bold mb-6">Printing Dashboard</h1>
+        <h1 className="text-3xl font-bold mb-6">Cutting Dashboard</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card className="bg-white shadow-sm">
             <CardContent className="p-6 text-center">
-              <span className="text-4xl font-bold text-blue-600">24</span>
+              <span className="text-4xl font-bold text-purple-600">22</span>
               <p className="text-gray-600 mt-2">Total Orders</p>
             </CardContent>
           </Card>
           
           <Card className="bg-white shadow-sm">
             <CardContent className="p-6 text-center">
-              <span className="text-4xl font-bold text-amber-500">8</span>
+              <span className="text-4xl font-bold text-amber-500">5</span>
               <p className="text-gray-600 mt-2">Ongoing Orders</p>
             </CardContent>
           </Card>
           
           <Card className="bg-white shadow-sm">
             <CardContent className="p-6 text-center">
-              <span className="text-4xl font-bold text-emerald-500">16</span>
+              <span className="text-4xl font-bold text-emerald-500">17</span>
               <p className="text-gray-600 mt-2">Completed Orders</p>
             </CardContent>
           </Card>
@@ -98,11 +92,18 @@ const PrintingDashboard = () => {
             All
           </Button>
           <Button 
-            variant={activeFilter === 'ongoing' ? 'default' : 'outline'} 
-            onClick={() => setActiveFilter('ongoing')}
+            variant={activeFilter === 'pending' ? 'default' : 'outline'} 
+            onClick={() => setActiveFilter('pending')}
             className="rounded-full"
           >
-            Ongoing
+            Pending
+          </Button>
+          <Button 
+            variant={activeFilter === 'in-progress' ? 'default' : 'outline'} 
+            onClick={() => setActiveFilter('in-progress')}
+            className="rounded-full"
+          >
+            In Progress
           </Button>
           <Button 
             variant={activeFilter === 'completed' ? 'default' : 'outline'} 
@@ -114,21 +115,22 @@ const PrintingDashboard = () => {
         </div>
 
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Printing Tasks</h2>
+          <h2 className="text-xl font-bold">Cutting Tasks</h2>
           <div className="flex gap-2">
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-2">
                   <Filter size={16} />
-                  Location
+                  Operator
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="end">
                 <div className="p-2">
                   <div className="flex flex-col gap-2">
-                    <Button variant="ghost" size="sm" className="justify-start">All Locations</Button>
-                    <Button variant="ghost" size="sm" className="justify-start">Internal</Button>
-                    <Button variant="ghost" size="sm" className="justify-start">External</Button>
+                    <Button variant="ghost" size="sm" className="justify-start">All Operators</Button>
+                    <Button variant="ghost" size="sm" className="justify-start">John Smith</Button>
+                    <Button variant="ghost" size="sm" className="justify-start">Sarah Johnson</Button>
+                    <Button variant="ghost" size="sm" className="justify-start">David Miller</Button>
                   </div>
                 </div>
               </PopoverContent>
@@ -152,19 +154,19 @@ const PrintingDashboard = () => {
           </div>
         </div>
 
-        <PrintingTasks filter={activeFilter} />
+        <CuttingTasks filter={activeFilter} />
 
         <Button 
-          className="fixed bottom-20 right-4 md:bottom-6 md:right-6 h-14 w-14 rounded-full shadow-lg"
+          className="fixed bottom-20 right-4 md:bottom-6 md:right-6 h-14 w-14 rounded-full shadow-lg bg-purple-600 hover:bg-purple-700"
           size="icon"
-          onClick={handleAddNewPrinting}
+          onClick={handleAddNewCutting}
         >
           <Plus size={24} />
         </Button>
 
-        <PrintingForm 
-          open={isPrintingFormOpen} 
-          onOpenChange={setIsPrintingFormOpen}
+        <CuttingForm 
+          open={isCuttingFormOpen} 
+          onOpenChange={setIsCuttingFormOpen}
           orderId={selectedOrderId}
         />
       </div>
@@ -172,4 +174,4 @@ const PrintingDashboard = () => {
   );
 };
 
-export default PrintingDashboard;
+export default CuttingDashboard;

@@ -38,7 +38,6 @@ export const OrderPageTabs = () => {
       // Setup to open the printing form with the new order
       setTimeout(() => {
         // This would trigger the PrintingForm to open in the PrintingDashboard
-        // In a real implementation, you might use state management or URL parameters
         window.dispatchEvent(new CustomEvent('openPrintingForm', { detail: { orderId: newOrderId } }));
       }, 100);
     }, 1000);

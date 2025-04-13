@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Orders from "./pages/Orders";
 import PrintingDashboard from "./pages/PrintingDashboard";
+import CuttingDashboard from "./pages/CuttingDashboard";
 import NotFound from "./pages/NotFound";
 import BottomNavigation from "./components/BottomNavigation";
 import { useIsMobile } from "./hooks/use-mobile";
@@ -29,6 +30,7 @@ const App = () => {
               <Route path="/create-order" element={<Index />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/printing" element={<PrintingDashboard />} />
+              <Route path="/cutting" element={<CuttingDashboard />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
