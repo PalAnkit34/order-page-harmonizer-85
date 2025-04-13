@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -290,7 +289,7 @@ export const PrintingForm: React.FC<PrintingFormProps> = ({
   // Edit mode - form for adding or editing printing details
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="w-[90vw] max-w-[425px] sm:max-w-[500px] md:max-w-[550px] lg:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>
             {orderId ? `Add Printing Details for Order #${orderId}` : 'Add New Printing Task'}
@@ -308,7 +307,7 @@ export const PrintingForm: React.FC<PrintingFormProps> = ({
             </h3>
             
             <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="material-used">Material Used (meters)</Label>
                   <Input
@@ -332,7 +331,7 @@ export const PrintingForm: React.FC<PrintingFormProps> = ({
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="size">Size</Label>
                   <Input
@@ -373,7 +372,7 @@ export const PrintingForm: React.FC<PrintingFormProps> = ({
             </h3>
             
             <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="wastage">Wastage Amount (meters)</Label>
                   <Input
@@ -420,7 +419,7 @@ export const PrintingForm: React.FC<PrintingFormProps> = ({
             </h3>
             
             <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="location">Location</Label>
                   <Select value={location} onValueChange={setLocation}>
