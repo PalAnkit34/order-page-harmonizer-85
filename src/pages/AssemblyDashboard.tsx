@@ -13,35 +13,35 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { CuttingTasks } from '@/components/CuttingTasks';
-import { CuttingForm } from '@/components/CuttingForm';
+import { AssemblyTasks } from '@/components/AssemblyTasks';
+import { AssemblyForm } from '@/components/AssemblyForm';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-const CuttingDashboard = () => {
+const AssemblyDashboard = () => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [date, setDate] = useState<Date | undefined>(undefined);
   const isMobile = useIsMobile();
-  const [isCuttingFormOpen, setIsCuttingFormOpen] = useState(false);
+  const [isAssemblyFormOpen, setIsAssemblyFormOpen] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string | undefined>(undefined);
 
-  // Listen for the custom event to open the cutting form
+  // Listen for the custom event to open the assembly form
   useEffect(() => {
-    const handleOpenCuttingForm = (event: CustomEvent) => {
+    const handleOpenAssemblyForm = (event: CustomEvent) => {
       const { orderId } = event.detail;
       setSelectedOrderId(orderId);
-      setIsCuttingFormOpen(true);
+      setIsAssemblyFormOpen(true);
     };
 
-    window.addEventListener('openCuttingForm', handleOpenCuttingForm as EventListener);
+    window.addEventListener('openAssemblyForm', handleOpenAssemblyForm as EventListener);
     
     return () => {
-      window.removeEventListener('openCuttingForm', handleOpenCuttingForm as EventListener);
+      window.removeEventListener('openAssemblyForm', handleOpenAssemblyForm as EventListener);
     };
   }, []);
 
-  const handleAddNewCutting = () => {
+  const handleAddNewAssembly = () => {
     setSelectedOrderId(undefined);
-    setIsCuttingFormOpen(true);
+    setIsAssemblyFormOpen(true);
   };
 
   return (
@@ -50,40 +50,34 @@ const CuttingDashboard = () => {
         {!isMobile && (
           <div className="mb-6 flex justify-between items-center">
             <Button variant="outline" asChild>
-              <Link to="/printing" className="flex items-center gap-2">
+              <Link to="/cutting" className="flex items-center gap-2">
                 <ArrowLeft size={18} />
-                Back to Printing
-              </Link>
-            </Button>
-            <Button variant="outline" asChild className="flex items-center gap-2 text-emerald-600 border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300">
-              <Link to="/assembly">
-                <PackageCheck size={18} className="mr-1" />
-                Assembly Dashboard
+                Back to Cutting
               </Link>
             </Button>
           </div>
         )}
 
-        <h1 className="text-3xl font-bold mb-6">Cutting Dashboard</h1>
+        <h1 className="text-3xl font-bold mb-6">Final Assembly Dashboard</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card className="bg-white shadow-sm">
             <CardContent className="p-6 text-center">
-              <span className="text-4xl font-bold text-purple-600">22</span>
+              <span className="text-4xl font-bold text-emerald-600">20</span>
               <p className="text-gray-600 mt-2">Total Orders</p>
             </CardContent>
           </Card>
           
           <Card className="bg-white shadow-sm">
             <CardContent className="p-6 text-center">
-              <span className="text-4xl font-bold text-amber-500">5</span>
-              <p className="text-gray-600 mt-2">Ongoing Orders</p>
+              <span className="text-4xl font-bold text-amber-500">4</span>
+              <p className="text-gray-600 mt-2">In Progress</p>
             </CardContent>
           </Card>
           
           <Card className="bg-white shadow-sm">
             <CardContent className="p-6 text-center">
-              <span className="text-4xl font-bold text-emerald-500">17</span>
+              <span className="text-4xl font-bold text-emerald-500">16</span>
               <p className="text-gray-600 mt-2">Completed Orders</p>
             </CardContent>
           </Card>
@@ -121,22 +115,22 @@ const CuttingDashboard = () => {
         </div>
 
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Cutting Tasks</h2>
+          <h2 className="text-xl font-bold">Assembly Tasks</h2>
           <div className="flex gap-2">
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-2">
                   <Filter size={16} />
-                  Operator
+                  Technician
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="end">
                 <div className="p-2">
                   <div className="flex flex-col gap-2">
-                    <Button variant="ghost" size="sm" className="justify-start">All Operators</Button>
-                    <Button variant="ghost" size="sm" className="justify-start">John Smith</Button>
-                    <Button variant="ghost" size="sm" className="justify-start">Sarah Johnson</Button>
-                    <Button variant="ghost" size="sm" className="justify-start">David Miller</Button>
+                    <Button variant="ghost" size="sm" className="justify-start">All Technicians</Button>
+                    <Button variant="ghost" size="sm" className="justify-start">Maya Rodriguez</Button>
+                    <Button variant="ghost" size="sm" className="justify-start">Raj Patel</Button>
+                    <Button variant="ghost" size="sm" className="justify-start">Emma Thompson</Button>
                   </div>
                 </div>
               </PopoverContent>
@@ -160,19 +154,19 @@ const CuttingDashboard = () => {
           </div>
         </div>
 
-        <CuttingTasks filter={activeFilter} />
+        <AssemblyTasks filter={activeFilter} />
 
         <Button 
-          className="fixed bottom-20 right-4 md:bottom-6 md:right-6 h-14 w-14 rounded-full shadow-lg bg-purple-600 hover:bg-purple-700"
+          className="fixed bottom-20 right-4 md:bottom-6 md:right-6 h-14 w-14 rounded-full shadow-lg bg-emerald-600 hover:bg-emerald-700"
           size="icon"
-          onClick={handleAddNewCutting}
+          onClick={handleAddNewAssembly}
         >
           <Plus size={24} />
         </Button>
 
-        <CuttingForm 
-          open={isCuttingFormOpen} 
-          onOpenChange={setIsCuttingFormOpen}
+        <AssemblyForm 
+          open={isAssemblyFormOpen} 
+          onOpenChange={setIsAssemblyFormOpen}
           orderId={selectedOrderId}
         />
       </div>
@@ -180,4 +174,4 @@ const CuttingDashboard = () => {
   );
 };
 
-export default CuttingDashboard;
+export default AssemblyDashboard;

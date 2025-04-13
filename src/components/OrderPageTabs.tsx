@@ -23,14 +23,17 @@ export const OrderPageTabs = () => {
     setTimeout(() => {
       setIsSaving(false);
       
+      // Create a new order ID (in a real app, this would come from the backend)
+      const newOrderId = Math.floor(100 + Math.random() * 900).toString();
+      
+      // Store the order ID in localStorage for the next steps
+      localStorage.setItem('currentOrderId', newOrderId);
+      
       // Show success toast
       toast({
         title: "Order saved successfully",
         description: "Your order has been saved. Redirecting to printing details.",
       });
-      
-      // Create a new order ID (in a real app, this would come from the backend)
-      const newOrderId = Math.floor(100 + Math.random() * 900).toString();
       
       // Redirect to printing form
       navigate('/printing');

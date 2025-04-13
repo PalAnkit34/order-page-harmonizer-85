@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Orders from "./pages/Orders";
 import PrintingDashboard from "./pages/PrintingDashboard";
 import CuttingDashboard from "./pages/CuttingDashboard";
+import AssemblyDashboard from "./pages/AssemblyDashboard";
 import NotFound from "./pages/NotFound";
 import BottomNavigation from "./components/BottomNavigation";
 import { useIsMobile } from "./hooks/use-mobile";
@@ -31,6 +32,7 @@ const App = () => {
               <Route path="/orders" element={<Orders />} />
               <Route path="/printing" element={<PrintingDashboard />} />
               <Route path="/cutting" element={<CuttingDashboard />} />
+              <Route path="/assembly" element={<AssemblyDashboard />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
