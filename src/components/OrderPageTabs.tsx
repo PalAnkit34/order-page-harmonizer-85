@@ -10,10 +10,12 @@ import { AccessorySelection } from './AccessorySelection';
 import { ArrowLeft, LayoutDashboard, ArrowRight } from 'lucide-react';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const OrderPageTabs = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSaveAndNext = () => {
@@ -45,6 +47,19 @@ export const OrderPageTabs = () => {
       }, 100);
     }, 1000);
   };
+
+  // Only admins can create new orders
+  if (user?.role !== 'admin') {
+    return (
+      <div className="p-8 text-center">
+        <h2 className="text-xl font-semibold mb-4">Permission Denied</h2>
+        <p className="mb-6">You don't have permission to create or edit orders.</p>
+        <Button variant="outline" asChild>
+          <Link to="/">Return to Dashboard</Link>
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
