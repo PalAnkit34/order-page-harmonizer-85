@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileUp, Printer, Calendar } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { 
@@ -14,11 +14,37 @@ import { Button } from '@/components/ui/button';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 
-export const OrderManagement = () => {
+interface OrderManagementProps {
+  selectedOrder?: any;
+}
+
+export const OrderManagement: React.FC<OrderManagementProps> = ({ selectedOrder }) => {
   const [companyName, setCompanyName] = useState('');
   const [orderQuantity, setOrderQuantity] = useState('');
   const [orderDate, setOrderDate] = useState<Date | undefined>(undefined);
   const [orderStatus, setOrderStatus] = useState('');
+
+  // Update form when selectedOrder changes
+  useEffect(() => {
+    if (selectedOrder) {
+      setCompanyName(selectedOrder.customerName || '');
+      setOrderQuantity(selectedOrder.quantity?.toString() || '');
+      setOrderStatus(selectedOrder.status || '');
+      
+      // Convert string date to Date object if it exists
+      if (selectedOrder.date) {
+        try {
+          const dateParts = selectedOrder.date.split('/');
+          if (dateParts.length === 3) {
+            const [month, day, year] = dateParts;
+            setOrderDate(new Date(`${year}-${month}-${day}`));
+          }
+        } catch (error) {
+          console.error('Error parsing date:', error);
+        }
+      }
+    }
+  }, [selectedOrder]);
 
   return (
     <div className="border rounded-md p-3 md:p-4 space-y-4 md:space-y-6 max-w-5xl mx-auto">

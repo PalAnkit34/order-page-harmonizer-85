@@ -7,16 +7,18 @@ import { PipingSpecifications } from './PipingSpecifications';
 import { AdditionalFeatures } from './AdditionalFeatures';
 import { OrderSpecifications } from './OrderSpecifications';
 import { AccessorySelection } from './AccessorySelection';
-import { ArrowLeft, LayoutDashboard, ArrowRight } from 'lucide-react';
+import { ArrowLeft, LayoutDashboard, ArrowRight, Search } from 'lucide-react';
 import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { OrderSearch } from './OrderSearch';
 
 export const OrderPageTabs = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   const handleSaveAndNext = () => {
     setIsSaving(true);
@@ -48,6 +50,14 @@ export const OrderPageTabs = () => {
     }, 1000);
   };
 
+  const handleOrderSelect = (order) => {
+    setSelectedOrder(order);
+    toast({
+      title: "Order loaded",
+      description: `Order #${order.id} has been loaded into the form.`,
+    });
+  };
+
   // Only admins can create new orders
   if (user?.role !== 'admin') {
     return (
@@ -72,7 +82,10 @@ export const OrderPageTabs = () => {
           </Link>
         </Button>
       </div>
-      <OrderManagement />
+      
+      <OrderSearch onOrderSelect={handleOrderSelect} />
+      
+      <OrderManagement selectedOrder={selectedOrder} />
       <PipingSpecifications />
       <AdditionalFeatures />
       <AccessorySelection />
