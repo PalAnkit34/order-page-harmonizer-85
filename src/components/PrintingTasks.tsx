@@ -10,15 +10,45 @@ interface PrintingTasksProps {
   filter: string;
 }
 
+interface PrintingRequirement {
+  id?: string;
+  print_location?: string;
+  material_type?: string;
+  print_colors?: string;
+  special_instructions?: string;
+  status?: string;
+}
+
+interface OrderWithPrinting {
+  id: string;
+  customer_name: string;
+  quantity: number;
+  order_date: string;
+  status: string;
+  printing_requirements: PrintingRequirement[];
+}
+
 export const PrintingTasks: React.FC<PrintingTasksProps> = ({ filter }) => {
   const { toast } = useToast();
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPrintingTasks = async () => {
       setLoading(true);
       try {
+        // Check for authentication first
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          toast({
+            title: "Authentication Required",
+            description: "You must be logged in to view printing tasks",
+            variant: "destructive"
+          });
+          return;
+        }
+        
         // Join orders and printing_requirements tables
         let query = supabase
           .from('orders')
@@ -49,7 +79,7 @@ export const PrintingTasks: React.FC<PrintingTasksProps> = ({ filter }) => {
         if (error) throw error;
         
         // Format the data for display
-        const formattedTasks = data.map(order => {
+        const formattedTasks = data.map((order: OrderWithPrinting) => {
           // Use an empty object as fallback if printing_requirements is empty array
           const printingReq = order.printing_requirements && order.printing_requirements.length > 0 
             ? order.printing_requirements[0] 

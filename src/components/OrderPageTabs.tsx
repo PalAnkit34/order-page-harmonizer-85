@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { OrderManagement } from './OrderManagement';
 import { BasicSpecifications } from './BasicSpecifications';
@@ -45,6 +45,13 @@ export const OrderPageTabs = () => {
     setIsSaving(true);
     
     try {
+      // Check if user is authenticated first
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error("You must be logged in to create or update orders");
+      }
+      
       let orderId;
       
       // If we're editing an existing order
@@ -81,7 +88,10 @@ export const OrderPageTabs = () => {
           })
           .select();
           
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase error details:", error);
+          throw error;
+        }
         
         orderId = data[0].id;
         toast({
@@ -120,6 +130,23 @@ export const OrderPageTabs = () => {
       description: `Order #${order.id} has been loaded into the form.`,
     });
   };
+
+  // Check if the user is authenticated
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Authentication Required",
+          description: "You must be logged in to create or update orders",
+          variant: "destructive"
+        });
+        navigate('/login');
+      }
+    };
+    
+    checkSession();
+  }, [navigate, toast]);
 
   // Only admins can create new orders
   if (user?.role !== 'admin') {
