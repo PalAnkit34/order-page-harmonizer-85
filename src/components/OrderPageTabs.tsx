@@ -54,9 +54,9 @@ export const OrderPageTabs = () => {
           .update({
             customer_name: orderData.customer_name,
             quantity: orderData.quantity,
-            order_date: orderData.order_date,
+            order_date: orderData.order_date ? orderData.order_date.toISOString() : null,
             status: orderData.status,
-            updated_at: new Date()
+            updated_at: new Date().toISOString()
           })
           .eq('id', selectedOrder.id)
           .select();
@@ -76,7 +76,7 @@ export const OrderPageTabs = () => {
           .insert({
             customer_name: orderData.customer_name,
             quantity: orderData.quantity,
-            order_date: orderData.order_date,
+            order_date: orderData.order_date ? orderData.order_date.toISOString() : null,
             status: orderData.status
           })
           .select();

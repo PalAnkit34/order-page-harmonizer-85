@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { 
   Dialog, 
@@ -149,7 +148,7 @@ export const PrintingForm: React.FC<PrintingFormProps> = ({
             material_type: values.material_type,
             print_location: values.print_location,
             special_instructions: values.special_instructions,
-            updated_at: new Date(),
+            updated_at: new Date().toISOString(),
           })
           .eq('id', existingData.id);
       } else {
@@ -170,7 +169,7 @@ export const PrintingForm: React.FC<PrintingFormProps> = ({
       // Update the order status to "processing"
       const { error: updateError } = await supabase
         .from('orders')
-        .update({ status: 'processing', updated_at: new Date() })
+        .update({ status: 'processing', updated_at: new Date().toISOString() })
         .eq('id', orderId);
         
       if (updateError) throw updateError;

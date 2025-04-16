@@ -50,7 +50,16 @@ export const PrintingTasks: React.FC<PrintingTasksProps> = ({ filter }) => {
         
         // Format the data for display
         const formattedTasks = data.map(order => {
-          const printingReq = order.printing_requirements[0] || {};
+          // Use an empty object as fallback if printing_requirements is empty array
+          const printingReq = order.printing_requirements && order.printing_requirements.length > 0 
+            ? order.printing_requirements[0] 
+            : {
+                print_location: 'Not specified',
+                material_type: 'Not specified',
+                print_colors: 'Not specified',
+                special_instructions: 'None'
+              };
+          
           return {
             id: order.id,
             companyName: order.customer_name,
