@@ -3,41 +3,66 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { MOCK_ORDERS } from '@/data/mockOrders';
 import { 
   Popover, 
   PopoverContent, 
   PopoverTrigger 
 } from '@/components/ui/popover';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface OrderSearchProps {
   onOrderSelect: (order: any) => void;
 }
 
 export const OrderSearch: React.FC<OrderSearchProps> = ({ onOrderSelect }) => {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [filteredOrders, setFilteredOrders] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Filter orders based on search term
+  // Fetch and filter orders from Supabase
   useEffect(() => {
-    if (searchTerm.trim() === '') {
-      setFilteredOrders([]);
-      return;
-    }
+    const fetchOrders = async () => {
+      if (searchTerm.trim() === '') {
+        setFilteredOrders([]);
+        return;
+      }
 
-    const lowercasedSearch = searchTerm.toLowerCase();
-    const filtered = MOCK_ORDERS.filter(order => 
-      order.id.toLowerCase().includes(lowercasedSearch) || 
-      order.customerName.toLowerCase().includes(lowercasedSearch)
-    ).slice(0, 5); // Limit to 5 results
+      setIsLoading(true);
+      try {
+        const lowercasedSearch = searchTerm.toLowerCase();
+        
+        const { data, error } = await supabase
+          .from('orders')
+          .select('*')
+          .or(`id.ilike.%${lowercasedSearch}%,customer_name.ilike.%${lowercasedSearch}%`)
+          .limit(5);
+          
+        if (error) throw error;
+        
+        setFilteredOrders(data || []);
+        if (data && data.length > 0) {
+          setIsOpen(true);
+        }
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+        toast({
+          title: 'Error searching orders',
+          description: error.message || 'Failed to fetch orders. Please try again.',
+          variant: 'destructive'
+        });
+        setFilteredOrders([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    setFilteredOrders(filtered);
-    if (filtered.length > 0 && searchTerm.trim() !== '') {
-      setIsOpen(true);
-    }
-  }, [searchTerm]);
+    const debounce = setTimeout(fetchOrders, 300);
+    return () => clearTimeout(debounce);
+  }, [searchTerm, toast]);
 
   const handleOrderClick = (order: any) => {
     onOrderSelect(order);
@@ -70,7 +95,11 @@ export const OrderSearch: React.FC<OrderSearchProps> = ({ onOrderSelect }) => {
         </div>
         
         <PopoverContent className="w-[calc(100vw-2rem)] md:w-80 lg:w-96 p-0" align="start">
-          {filteredOrders.length > 0 ? (
+          {isLoading ? (
+            <div className="p-4 text-center text-muted-foreground">
+              Searching...
+            </div>
+          ) : filteredOrders.length > 0 ? (
             <div className="max-h-[300px] overflow-auto">
               {filteredOrders.map((order) => (
                 <button
@@ -79,8 +108,8 @@ export const OrderSearch: React.FC<OrderSearchProps> = ({ onOrderSelect }) => {
                   onClick={() => handleOrderClick(order)}
                 >
                   <div>
-                    <p className="font-medium">Order #{order.id}</p>
-                    <p className="text-sm text-muted-foreground">{order.customerName}</p>
+                    <p className="font-medium">Order #{order.id?.substring(0, 8)}</p>
+                    <p className="text-sm text-muted-foreground">{order.customer_name}</p>
                   </div>
                   <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
                     {order.status}
@@ -88,11 +117,11 @@ export const OrderSearch: React.FC<OrderSearchProps> = ({ onOrderSelect }) => {
                 </button>
               ))}
             </div>
-          ) : (
+          ) : searchTerm.trim() !== '' ? (
             <div className="p-4 text-center text-muted-foreground">
               No orders found
             </div>
-          )}
+          ) : null}
         </PopoverContent>
       </Popover>
     </div>

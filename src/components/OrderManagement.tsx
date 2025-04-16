@@ -13,38 +13,79 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface OrderManagementProps {
   selectedOrder?: any;
+  onOrderDataChange?: (orderData: any) => void;
 }
 
-export const OrderManagement: React.FC<OrderManagementProps> = ({ selectedOrder }) => {
+export const OrderManagement: React.FC<OrderManagementProps> = ({ 
+  selectedOrder, 
+  onOrderDataChange 
+}) => {
+  const { toast } = useToast();
   const [companyName, setCompanyName] = useState('');
   const [orderQuantity, setOrderQuantity] = useState('');
   const [orderDate, setOrderDate] = useState<Date | undefined>(undefined);
-  const [orderStatus, setOrderStatus] = useState('');
+  const [orderStatus, setOrderStatus] = useState('pending');
+  const [isLoading, setIsLoading] = useState(false);
 
   // Update form when selectedOrder changes
   useEffect(() => {
     if (selectedOrder) {
-      setCompanyName(selectedOrder.customerName || '');
+      setCompanyName(selectedOrder.customerName || selectedOrder.customer_name || '');
       setOrderQuantity(selectedOrder.quantity?.toString() || '');
-      setOrderStatus(selectedOrder.status || '');
+      setOrderStatus(selectedOrder.status || 'pending');
       
       // Convert string date to Date object if it exists
-      if (selectedOrder.date) {
+      if (selectedOrder.date || selectedOrder.order_date) {
         try {
-          const dateParts = selectedOrder.date.split('/');
-          if (dateParts.length === 3) {
-            const [month, day, year] = dateParts;
-            setOrderDate(new Date(`${year}-${month}-${day}`));
+          const dateStr = selectedOrder.date || selectedOrder.order_date;
+          if (typeof dateStr === 'string') {
+            // Handle different date formats
+            if (dateStr.includes('/')) {
+              const dateParts = dateStr.split('/');
+              if (dateParts.length === 3) {
+                const [month, day, year] = dateParts;
+                setOrderDate(new Date(`${year}-${month}-${day}`));
+              }
+            } else {
+              setOrderDate(new Date(dateStr));
+            }
+          } else if (dateStr instanceof Date) {
+            setOrderDate(dateStr);
           }
         } catch (error) {
           console.error('Error parsing date:', error);
         }
       }
+
+      // Call the callback with the order data
+      if (onOrderDataChange) {
+        onOrderDataChange({
+          customer_name: selectedOrder.customerName || selectedOrder.customer_name,
+          quantity: parseInt(selectedOrder.quantity) || 0,
+          order_date: selectedOrder.date || selectedOrder.order_date,
+          status: selectedOrder.status || 'pending',
+          id: selectedOrder.id
+        });
+      }
     }
-  }, [selectedOrder]);
+  }, [selectedOrder, onOrderDataChange]);
+
+  // Call the callback whenever form data changes
+  useEffect(() => {
+    if (onOrderDataChange) {
+      onOrderDataChange({
+        customer_name: companyName,
+        quantity: parseInt(orderQuantity) || 0,
+        order_date: orderDate,
+        status: orderStatus
+      });
+    }
+  }, [companyName, orderQuantity, orderDate, orderStatus, onOrderDataChange]);
 
   return (
     <div className="border rounded-md p-3 md:p-4 space-y-4 md:space-y-6 max-w-5xl mx-auto">
@@ -94,6 +135,7 @@ export const OrderManagement: React.FC<OrderManagementProps> = ({ selectedOrder 
               value={orderQuantity}
               onChange={(e) => setOrderQuantity(e.target.value)}
               className="text-sm"
+              type="number"
             />
           </div>
           <div className="space-y-1 md:space-y-2">

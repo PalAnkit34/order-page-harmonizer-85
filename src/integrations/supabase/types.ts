@@ -9,7 +9,83 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      orders: {
+        Row: {
+          created_at: string | null
+          customer_name: string
+          id: string
+          order_date: string | null
+          quantity: number
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_name: string
+          id?: string
+          order_date?: string | null
+          quantity: number
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_name?: string
+          id?: string
+          order_date?: string | null
+          quantity?: number
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      printing_requirements: {
+        Row: {
+          created_at: string | null
+          design_file_url: string | null
+          id: string
+          material_type: string | null
+          order_id: string | null
+          print_colors: string | null
+          print_location: string | null
+          special_instructions: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          design_file_url?: string | null
+          id?: string
+          material_type?: string | null
+          order_id?: string | null
+          print_colors?: string | null
+          print_location?: string | null
+          special_instructions?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          design_file_url?: string | null
+          id?: string
+          material_type?: string | null
+          order_id?: string | null
+          print_colors?: string | null
+          print_location?: string | null
+          special_instructions?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "printing_requirements_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

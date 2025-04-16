@@ -12,6 +12,7 @@ import { Button } from './ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { OrderSearch } from './OrderSearch';
+import { supabase } from '@/integrations/supabase/client';
 
 export const OrderPageTabs = () => {
   const navigate = useNavigate();
@@ -19,25 +20,78 @@ export const OrderPageTabs = () => {
   const { user } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [orderData, setOrderData] = useState({
+    customer_name: '',
+    quantity: 0,
+    order_date: null,
+    status: 'pending'
+  });
 
-  const handleSaveAndNext = () => {
+  const handleOrderDataChange = (data) => {
+    setOrderData(data);
+  };
+
+  const handleSaveAndNext = async () => {
+    // Validate form
+    if (!orderData.customer_name || !orderData.quantity) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsSaving(true);
     
-    // Simulate saving the order data
-    setTimeout(() => {
-      setIsSaving(false);
+    try {
+      let orderId;
       
-      // Create a new order ID (in a real app, this would come from the backend)
-      const newOrderId = Math.floor(100 + Math.random() * 900).toString();
+      // If we're editing an existing order
+      if (selectedOrder && selectedOrder.id) {
+        const { data, error } = await supabase
+          .from('orders')
+          .update({
+            customer_name: orderData.customer_name,
+            quantity: orderData.quantity,
+            order_date: orderData.order_date,
+            status: orderData.status,
+            updated_at: new Date()
+          })
+          .eq('id', selectedOrder.id)
+          .select();
+          
+        if (error) throw error;
+        
+        orderId = selectedOrder.id;
+        toast({
+          title: "Order updated successfully",
+          description: "Your order has been updated. Redirecting to printing details.",
+        });
+      } 
+      // If it's a new order
+      else {
+        const { data, error } = await supabase
+          .from('orders')
+          .insert({
+            customer_name: orderData.customer_name,
+            quantity: orderData.quantity,
+            order_date: orderData.order_date,
+            status: orderData.status
+          })
+          .select();
+          
+        if (error) throw error;
+        
+        orderId = data[0].id;
+        toast({
+          title: "Order saved successfully",
+          description: "Your order has been saved. Redirecting to printing details.",
+        });
+      }
       
       // Store the order ID in localStorage for the next steps
-      localStorage.setItem('currentOrderId', newOrderId);
-      
-      // Show success toast
-      toast({
-        title: "Order saved successfully",
-        description: "Your order has been saved. Redirecting to printing details.",
-      });
+      localStorage.setItem('currentOrderId', orderId);
       
       // Redirect to printing form
       navigate('/printing');
@@ -45,9 +99,18 @@ export const OrderPageTabs = () => {
       // Setup to open the printing form with the new order
       setTimeout(() => {
         // This would trigger the PrintingForm to open in the PrintingDashboard
-        window.dispatchEvent(new CustomEvent('openPrintingForm', { detail: { orderId: newOrderId } }));
+        window.dispatchEvent(new CustomEvent('openPrintingForm', { detail: { orderId } }));
       }, 100);
-    }, 1000);
+    } catch (error) {
+      console.error("Error saving order:", error);
+      toast({
+        title: "Error saving order",
+        description: error.message || "There was an error saving your order. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleOrderSelect = (order) => {
@@ -85,7 +148,10 @@ export const OrderPageTabs = () => {
       
       <OrderSearch onOrderSelect={handleOrderSelect} />
       
-      <OrderManagement selectedOrder={selectedOrder} />
+      <OrderManagement 
+        selectedOrder={selectedOrder} 
+        onOrderDataChange={handleOrderDataChange}
+      />
       <PipingSpecifications />
       <AdditionalFeatures />
       <AccessorySelection />

@@ -10,7 +10,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { OrdersHeader } from '@/components/orders/OrdersHeader';
 import { OrdersFilterBar } from '@/components/orders/OrdersFilterBar';
 import { OrdersList } from '@/components/orders/OrdersList';
-import { MOCK_ORDERS } from '@/data/mockOrders';
 
 const Orders = () => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
@@ -18,10 +17,6 @@ const Orders = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isPrintingFormOpen, setIsPrintingFormOpen] = useState(false);
   const isMobile = useIsMobile();
-
-  const filteredOrders = activeFilter === 'all' 
-    ? MOCK_ORDERS 
-    : MOCK_ORDERS.filter(order => order.status === activeFilter);
 
   const handleViewDetails = (order: any) => {
     setSelectedOrder(order);
@@ -45,7 +40,7 @@ const Orders = () => {
           </CardHeader>
           <CardContent>
             <OrdersFilterBar activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
-            <OrdersList filteredOrders={filteredOrders} onViewDetails={handleViewDetails} />
+            <OrdersList filter={activeFilter} onViewDetails={handleViewDetails} />
           </CardContent>
         </Card>
 
@@ -53,7 +48,7 @@ const Orders = () => {
           <DialogContent className="max-w-4xl">
             <DialogHeader>
               <DialogTitle className="flex justify-between items-center">
-                <span>Order #{selectedOrder?.id} Details</span>
+                <span>Order #{selectedOrder?.id?.substring(0, 8)} Details</span>
                 <Button 
                   onClick={handleAddPrintingDetails}
                   variant="outline"
