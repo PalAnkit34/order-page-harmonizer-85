@@ -1,12 +1,12 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Card, 
   CardContent,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Plus, Calendar, Filter, Scissors } from 'lucide-react';
+import { ArrowLeft, Plus, Calendar, Filter } from 'lucide-react';
 import { 
   Popover,
   PopoverContent,
@@ -14,35 +14,12 @@ import {
 } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { PrintingTasks } from '@/components/PrintingTasks';
-import { PrintingForm } from '@/components/PrintingForm';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const PrintingDashboard = () => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [date, setDate] = useState<Date | undefined>(undefined);
   const isMobile = useIsMobile();
-  const [isPrintingFormOpen, setIsPrintingFormOpen] = useState(false);
-  const [selectedOrderId, setSelectedOrderId] = useState<string | undefined>(undefined);
-
-  // Listen for the custom event to open the printing form
-  useEffect(() => {
-    const handleOpenPrintingForm = (event: CustomEvent) => {
-      const { orderId } = event.detail;
-      setSelectedOrderId(orderId);
-      setIsPrintingFormOpen(true);
-    };
-
-    window.addEventListener('openPrintingForm', handleOpenPrintingForm as EventListener);
-    
-    return () => {
-      window.removeEventListener('openPrintingForm', handleOpenPrintingForm as EventListener);
-    };
-  }, []);
-
-  const handleAddNewPrinting = () => {
-    setSelectedOrderId(undefined);
-    setIsPrintingFormOpen(true);
-  };
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -55,18 +32,12 @@ const PrintingDashboard = () => {
                 Back to Dashboard
               </Link>
             </Button>
-            <Button variant="outline" asChild className="flex items-center gap-2 text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-300">
-              <Link to="/cutting">
-                <Scissors size={18} className="mr-1" />
-                Cutting Dashboard
-              </Link>
-            </Button>
           </div>
         )}
 
         <h1 className="text-3xl font-bold mb-6">Printing Dashboard</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-3 gap-4 mb-8">
           <Card className="bg-white shadow-sm">
             <CardContent className="p-6 text-center">
               <span className="text-4xl font-bold text-blue-600">24</span>
@@ -157,16 +128,9 @@ const PrintingDashboard = () => {
         <Button 
           className="fixed bottom-20 right-4 md:bottom-6 md:right-6 h-14 w-14 rounded-full shadow-lg"
           size="icon"
-          onClick={handleAddNewPrinting}
         >
           <Plus size={24} />
         </Button>
-
-        <PrintingForm 
-          open={isPrintingFormOpen} 
-          onOpenChange={setIsPrintingFormOpen}
-          orderId={selectedOrderId}
-        />
       </div>
     </div>
   );
