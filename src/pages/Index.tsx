@@ -8,7 +8,7 @@ const Index = () => {
     <div className="min-h-screen bg-neutral-50">
       <div className="container max-w-4xl mx-auto py-8 px-4">
         <OrderHeader />
-        <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm">
+        <div className="bg-white p-6 rounded-lg shadow-sm">
           <OrderPageTabs />
         </div>
       </div>
