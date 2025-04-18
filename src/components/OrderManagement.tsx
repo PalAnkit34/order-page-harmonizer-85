@@ -13,12 +13,52 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format } from 'date-fns';
+import { orderService } from '@/services/orderService';
+import { useToast } from '@/components/ui/use-toast';
 
 export const OrderManagement = () => {
   const [companyName, setCompanyName] = useState('');
   const [orderQuantity, setOrderQuantity] = useState('');
   const [orderDate, setOrderDate] = useState<Date | undefined>(undefined);
   const [orderStatus, setOrderStatus] = useState('');
+  const { toast } = useToast();
+
+  const handleSubmit = async () => {
+    if (!companyName || !orderQuantity || !orderDate || !orderStatus) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please fill in all fields",
+      });
+      return;
+    }
+
+    try {
+      await orderService.submitOrder({
+        companyName,
+        orderQuantity,
+        orderDate: format(orderDate, 'yyyy-MM-dd'),
+        orderStatus,
+      });
+
+      toast({
+        title: "Success",
+        description: "Order submitted successfully",
+      });
+
+      // Reset form
+      setCompanyName('');
+      setOrderQuantity('');
+      setOrderDate(undefined);
+      setOrderStatus('');
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to submit order",
+      });
+    }
+  };
 
   return (
     <div className="border rounded-md p-4 space-y-6">
@@ -108,6 +148,13 @@ export const OrderManagement = () => {
             </SelectContent>
           </Select>
         </div>
+
+        <Button 
+          className="w-full mt-4" 
+          onClick={handleSubmit}
+        >
+          Submit Order
+        </Button>
       </div>
     </div>
   );
